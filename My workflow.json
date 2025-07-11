@@ -1,0 +1,705 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "q": "",
+          "readStatus": "both"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b2e41ee2-3090-440a-8f40-30184fd40c93",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RttQDENs1KSZPlLN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "Email Classifer",
+        "categories": {
+          "categories": [
+            {
+              "category": "Application Received",
+              "description": "we have received your application"
+            },
+            {
+              "category": "Interview Invitation",
+              "description": "invite to interview"
+            },
+            {
+              "category": "Interview Scheduling",
+              "description": "/interview|call|meet/schedule"
+            },
+            {
+              "category": "Follow-Up & Next Steps",
+              "description": "assessment"
+            },
+            {
+              "category": "Rejections",
+              "description": "we have decided to not move forward with your application at this time | After careful consideration of your application, we regret to inform you that we will not be moving forward with your application at this time."
+            }
+          ]
+        },
+        "options": {
+          "multiClass": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "1a5ce865-81ed-42df-b741-6906db25df27",
+      "name": "Text Classifier",
+      "executeOnce": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a939e534-240d-4de2-be80-199bbb6d1de0",
+              "leftValue": "Application Received?",
+              "rightValue": "thank you for applying",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "904d4ab2-a433-4225-9176-7cc7ff6a25a2",
+              "leftValue": "Application Received?",
+              "rightValue": "we have received your application",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        580,
+        -220
+      ],
+      "id": "88dba444-59de-41fc-8564-d50f32a8d9fe",
+      "name": "If",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "eb84b210-5f9d-4330-a637-7a250a088a79",
+              "leftValue": "Interview Invitation",
+              "rightValue": "invited to interview",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "06b34862-271a-48af-b6a9-9f18fcfbe9ff",
+              "leftValue": "Interview Invitation",
+              "rightValue": "invite you to participate in a Virtual Panel Interview ",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        -80
+      ],
+      "id": "32816e95-dfde-437f-b2f5-c3a73713f222",
+      "name": "If1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6461bda6-ef9e-48b7-95ce-a486f3878b94",
+              "leftValue": "Interview Scheduling",
+              "rightValue": "schedule/interview|call|meet/",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        840,
+        180
+      ],
+      "id": "5726aa2f-24ca-425f-bcbf-95364cde85ee",
+      "name": "If2",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "176e5cab-9955-4b46-ada2-6e8338d6e2ec",
+              "leftValue": "Follow-Up & Next Steps",
+              "rightValue": "assessment",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        740,
+        340
+      ],
+      "id": "82826417-0be6-443d-9962-0ba67c5bf7f4",
+      "name": "If3",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "addLabels",
+        "threadId": "197f7efc2f6ce617",
+        "labelIds": [
+          "Label_6"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        -480
+      ],
+      "id": "0e41181b-cdb1-4308-94f6-9520ec7f9e3d",
+      "name": "Add label to thread",
+      "webhookId": "6931f6ff-2e3c-4068-83d2-ea1e7e0b945f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RttQDENs1KSZPlLN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "addLabels",
+        "threadId": "197f7efc2f6ce617",
+        "labelIds": [
+          "Label_3"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1100,
+        -180
+      ],
+      "id": "56bdeef2-9182-45f6-a802-389c1b4a7078",
+      "name": "Add label to thread1",
+      "webhookId": "72f3ade8-09d3-43cb-b9ea-dc0eb03196e4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RttQDENs1KSZPlLN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "label",
+        "operation": "create",
+        "name": "Interview Invitation",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1100,
+        20
+      ],
+      "id": "6127aaed-e4ee-46b2-8238-f99c0e3df386",
+      "name": "Create a label1",
+      "webhookId": "aef14bfa-5ed0-4273-b16a-2c2fee40ba39",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RttQDENs1KSZPlLN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "addLabels",
+        "threadId": "197f7efc2f6ce617",
+        "labelIds": [
+          "Label_4"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1320,
+        160
+      ],
+      "id": "f04c9602-1711-4f52-aabc-3a0c34ef2999",
+      "name": "Add label to thread2",
+      "webhookId": "11632e20-f8fe-44b3-be6f-3d8a69a4c853",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RttQDENs1KSZPlLN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "label",
+        "operation": "create",
+        "name": "Interview Scheduling",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1060,
+        280
+      ],
+      "id": "e7cb8697-4901-44cd-988e-c92c4c1505ac",
+      "name": "Create a label2",
+      "webhookId": "c3466eac-9b43-4a92-aabc-33cfac29e0a0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RttQDENs1KSZPlLN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "addLabels",
+        "threadId": "197f7efc2f6ce617",
+        "labelIds": [
+          "Label_5"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1300,
+        420
+      ],
+      "id": "d35eab31-4f63-477a-b459-7fc80540eb0d",
+      "name": "Add label to thread3",
+      "webhookId": "4c23a009-a0dc-4e0b-b81d-fab24df18791",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RttQDENs1KSZPlLN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "label",
+        "operation": "create",
+        "name": "Follow-Up & Next Steps",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1080,
+        480
+      ],
+      "id": "72aa0a35-aa46-4aad-b6fe-193b53d3dee3",
+      "name": "Create a label3",
+      "webhookId": "7c031fc8-4a7d-4499-8285-fd6cd0f7d992",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RttQDENs1KSZPlLN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "label",
+        "operation": "create",
+        "name": "Application Received",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1300,
+        -300
+      ],
+      "id": "3ba4fae7-67fc-43cf-ad42-04078479b6bb",
+      "name": "Create a label",
+      "webhookId": "0add964e-1693-4f8f-9053-4e92e50bf897",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RttQDENs1KSZPlLN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-nano"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        380
+      ],
+      "id": "49c570f7-e3ff-4511-9374-057cbd196bc6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "0XFDtDSTNS4bKCYX",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "47dd991c-39fe-45eb-9163-83e1e772dd4d",
+              "leftValue": "Rejections",
+              "rightValue": "After careful consideration of your application, we regret to inform you that we will not be moving forward with your application at this time. ",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "ae910b82-79b2-4752-8fa1-bb4744fa5542",
+              "leftValue": "Rejections",
+              "rightValue": "Unfortunately, the hiring team has decided to pursue with other candidates at this time and will not be moving forward with your application",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        500,
+        420
+      ],
+      "id": "7ccabdf6-3a38-4a9f-809f-8e1f886baf76",
+      "name": "If4",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "addLabels",
+        "threadId": "197f821ac13db1dd",
+        "labelIds": [
+          "TRASH"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        500
+      ],
+      "id": "8210f0f3-d5a0-42e2-ad25-5c87b8867a84",
+      "name": "Add label to thread4",
+      "webhookId": "3d967866-e989-4c95-a195-09b429bab6ce",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RttQDENs1KSZPlLN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "label",
+        "operation": "create",
+        "name": "Rejections",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        860,
+        660
+      ],
+      "id": "ed2dfef6-68d3-445b-bf9a-65586fffb72f",
+      "name": "Create a label4",
+      "webhookId": "e67314e1-f061-4778-b361-0bd7ff08bd1a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RttQDENs1KSZPlLN",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Add label to thread",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a label",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Add label to thread1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a label1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Add label to thread2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a label2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Add label to thread3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a label3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Add label to thread4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a label4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "39f3cd16-2897-4666-8d37-6f728ee32258",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "02ad60533064120c511d38598159fd09a340a7fa13dedeccf7568e8b905ad508"
+  },
+  "id": "DkgameBfqfbLO0Me",
+  "tags": []
+}
